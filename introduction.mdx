@@ -157,3 +157,71 @@ exit the worker node using the command:
 ```bash
 exit
 ```
+
+### List of Commands
+
+1. To see list of worker nodes or hosts in the inventory file:
+
+```bash
+ansible all --list-hosts
+```
+2. To ping all the worker nodes:
+
+```bash
+ansible all -m ping
+```
+3. To run a command on all the worker nodes:
+
+```bash
+ansible all -a "command"
+```
+4. To run a command on a specific group of worker nodes:
+
+```bash
+ansible <group_name> -a "command"
+```
+5. To run a command on a specific worker node:
+
+```bash
+ansible <host_name> -a "command"
+```
+
+6.  To see the inventory in a human-readable format:
+
+```bash
+ansible-inventory --list
+ansible-inventory --graph
+```
+
+7. To see only dev servers ip addresses:
+
+```bash
+ansible dev-servers --list-hosts
+```
+dev-servers it is the name given in the inventory file to the group of dev servers.[ansible-inventory --list]
+
+8. To see only test servers ip addresses:
+
+```bash
+ansible test-servers --list-hosts
+```
+
+9. To see only the first dev server ip address or index number:
+
+```bash
+ansible dev-servers[0]  --list-hosts
+```
+10. To see the servers from index number 2 to 4:.
+
+Note: Indexing starts from 0.
+
+```bash
+ansible all[2:4]  --list-hosts
+```
+
+11. COmmand to see the list of history on the based of the command:
+
+```bash
+export HISTTIMEFORMAT="%F %T"
+history
+```
