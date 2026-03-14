@@ -1,0 +1,159 @@
+## What is Ansible? [also known as agentless automation tool]
+
+Ansible is a **configuration management and automation tool** used to manage servers automatically.
+
+**Note:** It is also called as configuration management tool, but it can do much more than just configuration management. 
+
+- Free and opensource
+- Developed by Red Hat in 2012
+
+**Example tasks:**
+
+- Install software
+- Configure servers
+- Deploy applications
+- Manage multiple servers
+
+**Example:**
+
+Instead of installing nginx on 50 servers manually, Ansible installs it on all servers using one command.
+
+### Key Features
+
+- Agentless (no software needed on target servers)
+- Uses SSH
+- Written in YAML
+- Easy to learn and use
+
+### Benefits
+- Saves time and effort
+- Reduces errors
+- Ensures consistency across servers
+- Scalable for large environments
+
+### Architecture
+
+![](/images/architecture.png)
+
+- **Control Node**: Where Ansible is installed and commands are run.
+- **Managed Nodes**: The servers being managed by Ansible.
+- **Inventory**: list of servers.
+- **Playbooks**: automation scripts.
+- **Modules**: Reusable scripts that perform specific tasks (e.g., installing software, managing files)
+
+**Host inventory file** -> We will configure the IPs of the servers.
+
+**why?** Because Ansible needs to know which servers to manage and how to connect to them. 
+
+The inventory file allows us to specify the IP addresses or hostnames of the servers, along with any necessary connection details (like SSH keys or credentials). This way, Ansible can communicate with the managed nodes and execute tasks on them effectively.
+
+### Approches to work with Ansible
+
+- **Ad-hoc commands**: Quick one-time tasks (e.g., `ansible all -m ping`)
+- **Playbooks**: Reusable scripts for complex tasks (written in YAML) [vvp]
+- **Modules**: Pre-built functions for specific tasks (e.g., `yum`, `apt`, `copy`)
+
+## Working with Ansible ans establishing connectivity and running commands
+
+1. Launch **5** instances on AWS (Amazon Web Services) using EC2 (Elastic Compute Cloud) with names `Ansible master`, `Dev1`, `Dev2`, `test1`, and `test2`.
+
+2.  Connect to mobaxterm.
+3. Run the command to all the instances
+
+```bash
+sudo apt update -y
+```
+4. Now set the hostname of the instances as per their names using the command [each instance should have its own hostname] why hostname is important? Because it helps to identify and manage the servers easily, especially when you have multiple servers. It also allows you to use meaningful names instead of IP addresses, making it easier to remember and work with the servers.
+
+```bash
+sudo hostnamectl set-hostname <hostname>
+```
+5. Go to the Ansible master instance and install Ansible ,python and pip[package manager] using the following commands:
+
+```bash
+sudo yum install python3-pip -y
+pip install ansible
+```
+6. Check version of Ansible using the command:
+
+```bash
+ansible --version
+```
+7. Check the connectivity of the Ansible master to the other instances using the command:
+
+`-m` is a module that allows you to run a specific module on the target hosts. The `ping` module is a simple test to check if the connection to the hosts is working properly.
+
+```bash
+ansible -m ping localhost
+ansible all -m ping -i <path to inventory file>
+```
+8. Install git using adhoc command: 
+We will get warning: No inventory was parsed, only implicit localhost is available. Because we are running the command on localhost without specifying an inventory file. Ansible defaults to using the localhost as the target when no inventory is provided. To avoid this warning, you can specify the inventory file that contains the hosts you want to manage.
+
+```bash
+ansible localhost -a "sudo yum install git -y"
+```
+-a = adhoc command 
+
+Note: To remove the packages, you can use the following command:
+
+```bash
+ansible localhost -a "sudo yum remove git* -y"
+```
+
+git won't be installed on worker nodes because we are running the command on localhost. To install git on worker nodes, you need to specify the inventory file that contains the worker nodes and run the command against those nodes.
+
+We need to set up the root passsword for all the nodes because Ansible uses SSH to connect to the nodes, and having a password set up allows Ansible to authenticate and execute commands on the nodes. Without a password, Ansible would not be able to connect to the nodes and perform the necessary tasks. Setting up a root password ensures that Ansible can manage the nodes effectively and securely.
+
+```bash
+sudo passwd root
+```
+type the password and confirm it. Now you can use this password to connect to the nodes using Ansible and perform various tasks.
+
+9. We need to edit sshd_config file to allow root login and password authentication. This is necessary because by default, many Linux distributions disable root login and password authentication for security reasons. By editing the sshd_config file, we can enable these features, allowing Ansible to connect to the nodes using the root account and the password we set up earlier. Edit on all the nodes using the following command:
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+go to line no 38 and 65 [:38] [:65] and change the value of `PermitRootLogin` to `yes` &  value of `PasswordAuthentication` to `yes` and save the file. Then restart the sshd service using the command:
+
+```bash
+sudo systemctl restart sshd
+```
+```bash
+sudo systemctl status sshd
+```
+to check the status of the sshd service.
+```bash
+hostname -i
+```
+10. Establish passwordless SSH connectivity from the Ansible master to the worker nodes. This is important because it allows Ansible to connect to the worker nodes without requiring a password each time, making automation more efficient and seamless. To set up passwordless SSH, you can follow these steps:
+- On the Ansible master, generate an SSH key pair using the command:
+
+```bash
+ssh-keygen -t rsa
+```
+- Press Enter to accept the default file location and provide a passphrase if desired.
+- Copy the public key to each worker node using the command:
+
+```bash
+ssh-copy-id root@<worker_node_ip>
+```
+- use private ip address of the worker node.
+- Enter the password for the root user on the worker node when prompted.
+- Repeat the above step for each worker node.
+
+Verify the passwordless SSH connectivity by running the following command from the Ansible master to each worker node:
+
+```bash
+ssh private_ip_of_worker_node
+or
+ssh root@private_ip_of_worker_node
+```
+
+exit the worker node using the command:
+
+```bash
+exit
+```

@@ -1,0 +1,51 @@
+We need to communicate with the worker nodes from ansible main server. For that, we need to configure the host inventory file.
+
+- It will be present in path `/etc/ansible/hosts` by default. 
+- We can also create our own inventory file and specify the path while running the ansible commands.
+
+## What is an inventory file?
+
+An inventory file is a configuration file used by Ansible to define the hosts and groups of hosts that Ansible will manage. 
+
+It contains information about the target machines, such as their IP addresses, hostnames, and any necessary connection details (like SSH keys or credentials). 
+The inventory file allows Ansible to know which servers to connect to and manage when executing tasks or playbooks. 
+
+It can be organized into groups for easier management and can also include variables specific to certain hosts or groups.
+
+```bash 
+vi /etc/ansible/hosts
+
+# Example of an inventory file
+[dev]
+private_ip_of_dev1
+private_ip_of_dev2
+[test]
+private_ip_of_test1
+private_ip_of_test2
+```
+now this will not work becuase when we do `ansible --version`  it will show `config file = None`. This is because we have installed ansible using pip. To fix this, we need to create a configuration file for ansible and specify the path of the inventory file in it. 
+
+```bash
+sudo mkdir -p /etc/ansible
+sudo nano /etc/ansible/ansible.cfg
+# Add the following lines to the ansible.cfg file
+[defaults]
+inventory = /etc/ansible/hosts
+host_key_checking = False # This will disable the host key checking, which can cause issues when connecting to new hosts for the first time.
+```
+vi /etc/ansible/ansible.cfg
+
+```bash
+[dev] ## group name
+private_ip_of_dev1
+private_ip_of_dev2
+[test] ## group name
+private_ip_of_test1
+private_ip_of_test2
+```
+Verify the connectivity of the ansible master to the worker nodes using the command:
+
+```bash
+ansible all -m ping
+```
+Now if I run any command on the master nodes, it will work without any issues on the worker nodes.
