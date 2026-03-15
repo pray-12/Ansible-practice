@@ -1,0 +1,50 @@
+## Modules
+
+Modules are **small programs that perform tasks.**
+
+- Ansible modules are units of code that can control system resources or execute system commands
+- Modules works on key-value pair
+- Depending on the work, the module will change
+
+| Module    | Purpose             |
+| :--------- | :------------------- |
+| apt / yum | install packages    |
+| copy      | copy files          |
+| file      | manage files        |
+| service   | start/stop services |
+| user      | create users        |
+
+Install git on all the worker nodes using the yum module:
+
+```bash
+ansible all -m yum -a "name=git state=present"
+```
+state=present means that the package should be installed. If the package is already installed, it will not be reinstalled. If the package is not installed, it will be installed.
+
+### States;
+
+present	-> install
+absent	-> uninstall
+latest	-> update/upgrade
+
+### service module
+
+started - start
+stopped - stop
+restarted - restart
+enabled - enable
+
+command to check version of git installed on all the worker nodes using the command module:
+
+```bash
+ansible all -m command -a "git --version"
+```
+
+yaml syntax for installing git using yum module:
+
+```yaml
+- name: install git
+  apt:
+    name: git
+    state: present
+```

@@ -225,3 +225,10 @@ ansible all[2:4]  --list-hosts
 export HISTTIMEFORMAT="%F %T"
 history
 ```
+
+---
+
+There are 3 ways to work with Ansible:
+1. **Ad-hoc commands:** These are simple linux command s which are used for temporary tasks and are not reusable. They are executed directly from the command line and are useful for quick one-time tasks (e.g., `ansible all -m ping`)
+2. **Playbooks:** Reusable scripts for complex tasks (written in YAML) [vvp]
+3. **Modules:** Pre-built functions for specific tasks (e.g., `yum`, `apt`, `copy`)

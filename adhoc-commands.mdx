@@ -1,0 +1,73 @@
+
+##  **Ad-hoc commands**
+
+Defination: Ad-hoc commands are one-line commands used for quick tasks.
+
+Used for:
+
+- quick troubleshooting
+
+- quick configuration
+
+**But not ideal for large automation.**
+
+**Example:** 
+
+1.To check the connectivity of the ansible master to the worker nodes:
+
+```bash
+ansible all -m ping
+```
+This command will ping all the worker nodes and return a 'pong' response if the connection is successful.
+
+2Update the packages on all the worker nodes using the command run on the master node:
+
+```bash
+ansible all -a "sudo yum update -y"
+```
+
+3. command to check the disk space on all the worker nodes:
+
+```bash
+ansible all -a "df -h"
+```
+
+4. command to install git on all the worker nodes:
+
+```bash
+ansible all -a "sudo yum install git -y"
+```
+5. only on dev servers [name of the group in the inventory file]:
+
+```bash
+ansible dev-servers -a "sudo yum install git -y"
+```
+
+6. command to see version of git installed on all the worker nodes:
+
+```bash
+ansible all -a "git --version"
+```
+
+7. Install httpd on all servers:
+
+```bash
+ansible all -a "sudo yum install httpd -y"
+```
+8. Start the httpd service on all servers:
+
+```bash
+ansible all -a "sudo systemctl start httpd"
+```
+9. check the status of httpd service on all servers:
+
+```bash
+ansible all -a "sudo systemctl status httpd"
+```
+Now add Security group in AWS to allow HTTP traffic on port 80 to all the worker nodes. Just edit 1 security group and add the rule to allow HTTP traffic on port 80.
+
+Note: Ansible commands will be executed only on worker node and not the master node because we are running the command on the master node and specifying the inventory file that contains the worker nodes. Ansible will only execute the command on the nodes specified in the inventory file, which are the worker nodes in this case. The master node is not included in the inventory file, so it will not be affected by the command.
+
+**VVP:** cd command doesn't work with ansible because it is a shell built-in command and not a standalone executable.
+
+
