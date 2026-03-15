@@ -66,6 +66,96 @@ Note: `Gathering facts` is enabled by default in playbooks. It collects informat
         enabled: yes
 ```
 
+4. Installtion of git ,maven, docker using a playbook:
+
+```yaml install_packages.yml
+- name: Installtion of git ,maven, docker
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install git
+      yum:
+        name: git
+        state: present
+    - name: Install maven
+      yum:
+        name: maven
+        state: present
+    - name: Install docker
+      yum:
+        name: docker
+        state: present
+    - name: start docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes # enable docker service to start on boot
+```
+
+to uninstall the packages, you can change the state to absent in the playbook:
+
+```yaml
+state: absent
+```
+
+When we have multiple tasks in a playbook editing a playbook is not recommended , so we can run a linux command to uninstall the packages using the command module:
+
+```bash
+sed -i 's/present/absent/g' install_packages.yml
+```
+ 
+5. Installation of nginx using a playbook:
+
+```yaml install_nginx.yml
+- name: Install nginx on worker nodes
+  hosts: all
+  become: yes # switch to root user to install packages
+  tasks:
+    - name: enable nginx repository ## only for amazon linux 2 because nginx is not available in the default repository of amazon linux 2 or older versions of linux
+      command: sudo amazon-linux-extras enable nginx1  
+
+    - name: Install nginx
+      yum:
+        name: nginx
+        state: present
+    - name: Start nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes # enable nginx service to start on boot [automatically start nginx service when the server is rebooted]
+```
+
+6. Deploy a nginx web page using a playbook:
+
+```yaml deploy_nginx_page.yml
+- name: installation of nginx and starting nginx service
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: install nginx
+      yum:
+        name: nginx
+        state: present
+
+    - name: start nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: deployment of web page
+      copy: # module to copy files from local to remote
+        src: index.html # source file on the ansible master node
+        dest: /usr/share/nginx/html/index.html # destination file on the worker nodes
+        mode: '0644' # file permissions
+
+    - name: restarting nginx service
+      service:
+        name: nginx
+        state: restarted
+```
+
 ## Project 1: Executing a Shell Script (Sample Nginx App) using Ansible Playbook on "Dev-Servers"
 =============================================================
 1) Configure "dev-servers" in Ansible Host Inventory File
@@ -75,6 +165,8 @@ Note: `Gathering facts` is enabled by default in playbooks. It collects informat
 3) Create a Sample Shell Script
 
 vi deploy_app.sh ----->
+
+```bash
 #!/bin/bash
 
 echo "Starting sample application deployment..."
@@ -90,14 +182,14 @@ sudo systemctl enable nginx
 sudo systemctl start nginx
 
 echo "Deployment completed successfully!"
-
+```
 3.1) Make the script executable:
 chmod +x /root/deploy_app.sh
 
 4) Ansible Playbook to Execute the Script
 
 vi run-deploy.yml ---->
----
+```yaml
 - name: Run deployment script on dev servers
   hosts: dev-servers
   become: yes
@@ -111,6 +203,7 @@ vi run-deploy.yml ---->
 
     - name: Execute deployment script
       command: /tmp/deploy_app.sh
+```
 
 5) Run the playbook
 ansible-playbook run-deploy.yml
@@ -125,27 +218,36 @@ This will:
 Every time you run the playbook, your script automatically executes on all dev-servers exactly as you want.
 
 6) To Remove Ansible using AdHoc Command
+
+```bash
 ansible dev-servers -b -m yum -a "name=nginx state=absent autoremove=yes"
 OR
 ansible dev-servers -b -m yum -a "name=nginx state=absent"
+```
 
 ✅ Explanation of -b, -m, and -a
 -b → Become (sudo)
+
 Same as writing: --become
+
 If you remove -b, Ansible will try to remove nginx without sudo, which will fail.
+
 So YES — it is required for package operations.
 
 -m → Module
 
 -a → Arguments
+
 -a means:
+
 ➡️ Pass arguments to the module
 Here, 
 "name=nginx state=absent" are the arguments expected by the yum module.
+
 If you remove -a, Ansible will not know what to uninstall.
 
 7) To Remove Ansible using Playbook (Ask Students to Write)
----
+```yaml
 - name: Remove nginx from dev servers
   hosts: dev-servers
   become: yes
@@ -168,6 +270,108 @@ If you remove -a, Ansible will not know what to uninstall.
         name: nginx
         state: absent	#uninstall the package
         autoremove: yes	#remove unused dependencies
-
+```
 Execute the Playbook;
 ansible-playbook remove-nginx.yml
+
+### SETUP Module
+
+Setup module will show the system info about the worker nodes
+
+```bash
+ansible all -m setup
+```
+
+Only CPU information of the worker nodes:
+
+```bash
+ansible all -m setup | grep -i cpu
+or 
+ansible all -m setup -a "filter=ansible_processor*"
+```
+
+only memory information of the worker nodes:
+
+```bash
+ansible all -m setup -a "filter=ansible_mem*"
+```
+worker node belong to which family:
+
+```bash
+ansible all -m setup | grep -i family
+or
+ansible all -m setup -a "filter=ansible_os_family"
+```
+
+Printing a message using debug module:
+
+```yaml
+- name: Print a message
+  hosts: all
+  tasks:
+    - name: Print a message using debug module
+      debug:
+        msg: "- name: printing messages
+  hosts: all
+  tasks:
+    - name: printing the message
+      debug:
+      msg: "number of cpus: {{ ansible_processor_vcpus }}, totalmemsize: {{ ansible_memtotal_mb }}, the flavour of linux: {{ ansible_os_family }}"
+```
+ansible_memtotal_mb how can we get this variable?
+
+ansible_memtotal_mb is a variable that is automatically collected by the setup module when you run the command `ansible all -m setup`. It contains the total memory size of the worker nodes in megabytes. You can use this variable in your playbooks or ad-hoc commands to access the total memory information of the worker nodes.
+
+### Ansible Tags
+
+Tags are used to run specific tasks in a playbook. It allows you to run only a subset of tasks in a playbook based on the tags assigned to those tasks. This can be useful when you want to run only certain tasks without executing the entire playbook.
+
+- TAGS are used to execute or skip specific tasks
+
+```yaml tags_playbook.yml
+- name: tags playbook
+  hosts: all
+  become: yes
+  tasks:
+    - name: installation of git
+      yum: 
+        name: git
+        state: present
+      tags: git
+    
+    - name: installation of docker
+      yum:
+        name: docker
+        state: present
+      tags: docker
+
+    - name: starting docker
+      service:
+        name: docker
+        state: started
+      tags: startdocker
+
+    - name: creation of user
+      user:
+        name: kastro
+        state: present
+      tags: kastro-user
+```
+
+To run only the tasks with the tag "git" and "startdocker":
+
+```bash
+ansible-playbook tags-playbook.yml --tags git,startdocker
+```
+
+Skip the tasks with the tag "docker":
+
+```bash
+ansible-playbook tags-playbook.yml --skip-tags docker
+```
+
+To check the list of users on the worker nodes:
+
+```bash
+ansible all -a "cat /etc/passwd"
+```
