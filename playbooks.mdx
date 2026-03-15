@@ -6,4 +6,168 @@ Playbooks are **YAML files used to automate tasks**.
 - We can execute all the modules written inside a playbook at a time
 - Playbook is also written using yml
 - YML starts with --- and ends with ... (Both of these are optional)
-Playbook contains tasks
+- Playbook contains tasks
+
+basic syntax of a playbook:
+
+```yaml playbook.yaml
+- name: Name of the playbook
+  hosts: group_name # group name defined in the inventory file or all for all the hosts
+  become: yes/no (if you want to run the tasks with sudo privileges)
+  
+  tasks:
+    - name: Name of the task
+      module_name:
+        key1: value1
+        key2: value2
+```
+
+1. Check the syntax of the playbook before running it:
+
+```bash
+ansible-playbook playbook.yaml --syntax-check
+```
+
+2. Run the playbook:
+
+```bash
+ansible-playbook playbook.yaml
+```
+
+## Project 1: Test the connectivity of the ansible master to the worker nodes using a playbook
+```yaml test_connectivity.yml
+- name: Test connectivity to worker nodes
+  hosts: all
+  tasks:
+    - name: Ping the worker nodes
+      ping:
+```
+
+Note: `Gathering facts` is enabled by default in playbooks. It collects information about the remote hosts before executing the tasks. This can be useful for conditional tasks or when you need to use the collected information in your playbook. However, if you want to disable fact gathering to speed up the execution of your playbook, you can set `gather_facts: no` at the play level. It will run before the tasks and will not collect any information about the remote hosts. This can be useful when you don't need the collected information for your tasks and want to reduce the execution time of your playbook.
+
+3. Playbook to install apache on all the worker nodes:
+
+```yaml install_apache.yml
+- name: Install Apache on worker nodes
+  hosts: all ## group name defined in the inventory file or all for all the hosts
+  become: yes # switch to root user to install packages
+  tasks:
+    - name: Install Apache
+      yum:
+        name: httpd ## package name
+        state: present ## state can be present, absent, latest
+    - name: print a message
+      debug: ## module to print a message
+        msg: "Apache has been installed successfully!"
+    - name: Start Apache service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+```
+
+## Project 1: Executing a Shell Script (Sample Nginx App) using Ansible Playbook on "Dev-Servers"
+=============================================================
+1) Configure "dev-servers" in Ansible Host Inventory File
+
+2) In the Ansible Master Node, be in /root path
+
+3) Create a Sample Shell Script
+
+vi deploy_app.sh ----->
+#!/bin/bash
+
+echo "Starting sample application deployment..."
+
+# Update packages
+sudo yum update -y
+
+# Install nginx as a sample application
+sudo yum install -y nginx
+
+# Start nginx service
+sudo systemctl enable nginx
+sudo systemctl start nginx
+
+echo "Deployment completed successfully!"
+
+3.1) Make the script executable:
+chmod +x /root/deploy_app.sh
+
+4) Ansible Playbook to Execute the Script
+
+vi run-deploy.yml ---->
+---
+- name: Run deployment script on dev servers
+  hosts: dev-servers
+  become: yes
+
+  tasks:
+    - name: Copy deployment script to remote server
+      copy:
+        src: /root/deploy_app.sh
+        dest: /tmp/deploy_app.sh
+        mode: '0755'
+
+    - name: Execute deployment script
+      command: /tmp/deploy_app.sh
+
+5) Run the playbook
+ansible-playbook run-deploy.yml
+
+This will:
+✔ Copy your shell script from the master (controller)
+✔ Place it on /tmp/deploy_app.sh on each dev server
+✔ Make it executable
+✔ Run it normally
+
+🔥 Result
+Every time you run the playbook, your script automatically executes on all dev-servers exactly as you want.
+
+6) To Remove Ansible using AdHoc Command
+ansible dev-servers -b -m yum -a "name=nginx state=absent autoremove=yes"
+OR
+ansible dev-servers -b -m yum -a "name=nginx state=absent"
+
+✅ Explanation of -b, -m, and -a
+-b → Become (sudo)
+Same as writing: --become
+If you remove -b, Ansible will try to remove nginx without sudo, which will fail.
+So YES — it is required for package operations.
+
+-m → Module
+
+-a → Arguments
+-a means:
+➡️ Pass arguments to the module
+Here, 
+"name=nginx state=absent" are the arguments expected by the yum module.
+If you remove -a, Ansible will not know what to uninstall.
+
+7) To Remove Ansible using Playbook (Ask Students to Write)
+---
+- name: Remove nginx from dev servers
+  hosts: dev-servers
+  become: yes
+
+  tasks:
+    - name: Stop nginx service if running
+      service:
+        name: nginx
+        state: stopped
+      ignore_errors: yes
+
+    - name: Disable nginx service
+      service:
+        name: nginx
+        enabled: no	#Disable the service, so it will not start again
+      ignore_errors: yes
+
+    - name: Remove nginx package
+      yum:
+        name: nginx
+        state: absent	#uninstall the package
+        autoremove: yes	#remove unused dependencies
+
+Execute the Playbook;
+ansible-playbook remove-nginx.yml
