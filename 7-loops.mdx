@@ -1,0 +1,23 @@
+## Loops
+
+- Loops are used to perform repetitive tasks in Ansible. 
+- They allow you to execute a task multiple times with different items. 
+- This is particularly useful when you want to manage multiple resources or perform the same action on a list of items.
+- Lets say i want to install 10 packages, so we need to write 10 tasks. Instead of writing 10 tasks, we can use LOOPS concept to reduce the number of lines in the playbook
+
+```yaml
+- name: Loops concept
+  hosts: all
+  become: yes
+  gather_facts: false
+  tasks:
+    - name: installation of packages
+      yum: name={{item}} state=present
+      with_items:
+        - git
+        - maven
+        - tree
+        - httpd
+```
+
+item is a reserved keyword in Ansible that represents the current item in the loop. The with_items directive is used to specify the list of items that we want to loop through. In this example, we are installing 4 packages: git, maven, tree, and httpd. The yum module will be executed for each item in the list, installing each package on the target hosts.

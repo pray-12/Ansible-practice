@@ -26,6 +26,7 @@ Instead of installing nginx on 50 servers manually, Ansible installs it on all s
 - Easy to learn and use
 
 ### Benefits
+
 - Saves time and effort
 - Reduces errors
 - Ensures consistency across servers
@@ -41,6 +42,8 @@ Instead of installing nginx on 50 servers manually, Ansible installs it on all s
 - **Playbooks**: automation scripts.
 - **Modules**: Reusable scripts that perform specific tasks (e.g., installing software, managing files)
 
+Ansible is considered agentless because it requires no software, agents, or background daemons to be installed on target systems.
+
 **Host inventory file** -> We will configure the IPs of the servers.
 
 **why?** Because Ansible needs to know which servers to manage and how to connect to them. 
@@ -53,7 +56,7 @@ The inventory file allows us to specify the IP addresses or hostnames of the ser
 - **Playbooks**: Reusable scripts for complex tasks (written in YAML) [vvp]
 - **Modules**: Pre-built functions for specific tasks (e.g., `yum`, `apt`, `copy`)
 
-## Working with Ansible ans establishing connectivity and running commands
+## Working with Ansible and establishing connectivity and running commands
 
 1. Launch **5** instances on AWS (Amazon Web Services) using EC2 (Elastic Compute Cloud) with names `Ansible master`, `Dev1`, `Dev2`, `test1`, and `test2`.
 
@@ -67,6 +70,7 @@ sudo apt update -y
 
 ```bash
 sudo hostnamectl set-hostname <hostname>
+sudo -i # to switch to root user
 ```
 5. Go to the Ansible master instance and install Ansible ,python and pip[package manager] using the following commands:
 
@@ -88,7 +92,8 @@ ansible -m ping localhost
 ansible all -m ping -i <path to inventory file>
 ```
 8. Install git using adhoc command: 
-We will get warning: No inventory was parsed, only implicit localhost is available. Because we are running the command on localhost without specifying an inventory file. Ansible defaults to using the localhost as the target when no inventory is provided. To avoid this warning, you can specify the inventory file that contains the hosts you want to manage.
+
+We will get warning: **No inventory was parsed, only implicit localhost is available**. Because we are running the command on localhost without specifying an inventory file. `Ansible defaults to using the localhost as the target when no inventory is provided.` To avoid this warning, you can specify the inventory file that contains the hosts you want to manage.
 
 ```bash
 ansible localhost -a "sudo yum install git -y"
@@ -138,7 +143,7 @@ ssh-keygen -t rsa
 - Copy the public key to each worker node using the command:
 
 ```bash
-ssh-copy-id root@<worker_node_ip>
+ssh-copy-id root@<worker_node_private_ip>
 ```
 - use private ip address of the worker node.
 - Enter the password for the root user on the worker node when prompted.
@@ -157,6 +162,8 @@ exit the worker node using the command:
 ```bash
 exit
 ```
+
+---
 
 ### List of Commands
 
@@ -229,6 +236,6 @@ history
 ---
 
 There are 3 ways to work with Ansible:
-1. **Ad-hoc commands:** These are simple linux command s which are used for temporary tasks and are not reusable. They are executed directly from the command line and are useful for quick one-time tasks (e.g., `ansible all -m ping`)
+1. **Ad-hoc commands:** These are simple linux commands which are used for temporary tasks and are not reusable. They are executed directly from the command line and are useful for quick one-time tasks (e.g., `ansible all -m ping`)
 2. **Playbooks:** Reusable scripts for complex tasks (written in YAML) [vvp]
 3. **Modules:** Pre-built functions for specific tasks (e.g., `yum`, `apt`, `copy`)
