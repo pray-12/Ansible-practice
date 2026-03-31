@@ -20,7 +20,7 @@ ansible all -m ping
 ```
 This command will ping all the worker nodes and return a 'pong' response if the connection is successful.
 
-2Update the packages on all the worker nodes using the command run on the master node:
+2. Update the packages on all the worker nodes using the command run on the master node:
 
 ```bash
 ansible all -a "sudo yum update -y"
