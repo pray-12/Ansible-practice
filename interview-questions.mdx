@@ -1,0 +1,330 @@
+# 40 Ansible Interview Questions with Answers and Real-World Scenarios
+
+## 1. What is Ansible?
+
+Ansible is an open-source automation tool used for configuration management, application deployment, and orchestration.
+
+**Real-world scenario:**  
+Automating the setup of 50 servers instead of manually logging into each via SSH.
+
+---
+
+## 2. What is agentless architecture?
+
+Ansible does not require any agent to be installed on managed nodes; it uses SSH.
+
+**Real-world scenario:**  
+Managing production servers without installing additional software.
+
+---
+
+## 3. What is an inventory?
+
+A file that contains the list of hosts and groups.
+
+**Real-world scenario:**  
+Grouping servers into `web`, `db`, and `prod` environments.
+
+---
+
+## 4. What are modules in Ansible?
+
+Modules are reusable scripts used to perform tasks like installing packages or managing services.
+
+**Real-world scenario:**  
+Using the `apt` or `yum` module to install software across multiple servers.
+
+---
+
+## 5. What is a playbook?
+
+A YAML file that defines automation tasks.
+
+**Real-world scenario:**  
+Deploying an application with a single command.
+
+---
+
+## 6. What is idempotency?
+
+Running the same playbook multiple times results in the same state.
+
+**Real-world scenario:**  
+Ensuring a package is installed without reinstalling it repeatedly.
+
+---
+
+## 7. What is YAML?
+
+A human-readable data format used to write playbooks.
+
+---
+
+## 8. What is a task?
+
+A single unit of work in a playbook.
+
+---
+
+## 9. What is a role?
+
+A structured way to organize playbooks into reusable components.
+
+**Real-world scenario:**  
+Creating a reusable role for installing and configuring a web server.
+
+---
+
+## 10. What is a handler?
+
+A task that runs only when notified.
+
+**Real-world scenario:**  
+Restarting a web server only when its configuration changes.
+
+---
+
+## 11. What is the when condition?
+
+Used to execute tasks conditionally.
+
+**Real-world scenario:**  
+Installing packages only on Ubuntu servers.
+
+---
+
+## 12. What is a loop?
+
+Used to repeat a task multiple times.
+
+**Real-world scenario:**  
+Creating multiple users in one task.
+
+---
+
+## 13. Difference between command and shell module?
+
+`command` does not support shell features, while `shell` does.
+
+**Real-world scenario:**  
+Using `shell` when pipes or redirection are needed.
+
+---
+
+## 14. What is register?
+
+Stores the output of a task.
+
+**Real-world scenario:**  
+Capturing command output and using it in later tasks.
+
+---
+
+## 15. What is a template?
+
+A file with dynamic variables using Jinja2.
+
+**Real-world scenario:**  
+Generating configuration files dynamically.
+
+---
+
+## 16. What is lookup?
+
+Used to fetch data from external sources.
+
+**Real-world scenario:**  
+Reading a password from a file.
+
+---
+
+## 17. What is Ansible Galaxy?
+
+A repository for sharing and downloading roles.
+
+**Real-world scenario:**  
+Using pre-built roles for quick setup.
+
+---
+
+## 18. What is Ansible Vault?
+
+Used to encrypt sensitive data.
+
+**Real-world scenario:**  
+Protecting database credentials.
+
+---
+
+## 19. What is become?
+
+Used to execute tasks with elevated privileges.
+
+**Real-world scenario:**  
+Installing packages as root.
+
+---
+
+## 20. What is fact gathering?
+
+Collects system information about managed nodes.
+
+**Real-world scenario:**  
+Using OS details to run conditional tasks.
+
+---
+
+## 21. What is dynamic inventory?
+
+Automatically retrieves hosts from external sources.
+
+**Real-world scenario:**  
+Fetching instances from cloud environments.
+
+---
+
+## 22. What are strategies?
+
+Define how tasks run across hosts.
+
+**Real-world scenario:**  
+Running tasks in parallel or sequentially.
+
+---
+
+## 23. What is serial?
+
+Executes tasks in batches.
+
+**Real-world scenario:**  
+Rolling updates on production servers.
+
+---
+
+## 24. What is delegate_to?
+
+Runs a task on a different host.
+
+**Real-world scenario:**  
+Running database backup from a control server.
+
+---
+
+## 25. What is block?
+
+Groups tasks together.
+
+---
+
+## 26. What is rescue?
+
+Executes if a block fails.
+
+**Real-world scenario:**  
+Rollback if deployment fails.
+
+---
+
+## 27. What is always?
+
+Runs tasks regardless of failure.
+
+---
+
+## 28. What is async?
+
+Runs tasks in the background.
+
+**Real-world scenario:**  
+Running long-running jobs like updates.
+
+---
+
+## 29. What is poll?
+
+Checks the status of async tasks.
+
+---
+
+## 30. Difference between handler and task?
+
+Handler runs only when notified; task runs normally.
+
+
+---
+
+## 31. How to restart a service only when config changes?
+
+Use notify and handlers.
+
+**Real-world scenario:**  
+Restarting a web server only when configuration changes.
+
+---
+
+## 32. How to install multiple packages?
+
+Use loop.
+
+**Real-world scenario:**  
+Installing git, docker, and maven together.
+
+---
+
+## 33. How to skip a task based on OS?
+
+Use when condition.
+
+---
+
+## 34. How to store secrets securely?
+
+Use Ansible Vault.
+
+**Real-world scenario:**  
+Encrypting API keys.
+
+---
+
+## 35. How to deploy an application?
+
+Install dependencies, copy code, and start services.
+
+---
+
+## 36. How to manage multiple environments?
+
+Use inventory groups.
+
+**Real-world scenario:**  
+Separating dev, staging, and production.
+
+---
+
+## 37. How to reuse code?
+
+Use roles.
+
+---
+
+## 38. How to manage cloud infrastructure?
+
+Use cloud modules.
+
+**Real-world scenario:**  
+Provisioning virtual machines.
+
+---
+
+## 39. How to handle failures?
+
+Use block, rescue, and always.
+
+---
+
+## 40. How to optimize performance?
+
+Use forks, strategies, and disable fact gathering.
+
+**Real-world scenario:**  
+Speeding up execution on large infrastructures.

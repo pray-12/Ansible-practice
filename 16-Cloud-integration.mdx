@@ -1,0 +1,46 @@
+In Ansible, cloud integration means using Ansible to create, manage, and automate cloud infrastructure.
+
+## What It Means (In Simple Words)
+
+Instead of manually creating resources in cloud consoles, you can use Ansible to automate:
+
+- Create servers (VMs)
+- Configure networking
+- Deploy applications
+- Manage scaling
+
+## Example Use Case: AWS EC2
+
+```yaml
+- name: Create EC2 instance
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Launch instance
+      ec2:
+        key_name: mykey
+        instance_type: t2.micro
+        image: ami-123456
+        region: ap-south-1
+        count: 1
+```
+This creates a virtual machine in AWS.
+
+## How It Works
+
+```bash
+Ansible → Cloud API → Cloud Provider → Resource Created
+```
+
+## Real DevOps Use Cases
+- Provision EC2 instances
+- Create VPC, subnets, security groups
+- Deploy apps on cloud
+- Auto-scale infrastructure
+- Configure servers after creation
+
+## Advantages
+- Infrastructure as Code (IaC)
+- Automation & consistency
+- Faster deployments
+- No manual errors

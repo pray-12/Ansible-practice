@@ -1,0 +1,55 @@
+Ansible **Vault** is a feature used to encrypt sensitive data like passwords, API keys, SSH keys, Database credentials in playbooks or variable files, ensuring secure configuration management.
+
+## Why do we use Vault?
+
+Imagine this in a playbook:
+
+```bash
+db_password: mypassword123
+```
+
+❌ Not safe (plain text)
+
+👉 With Vault:
+
+```bash
+db_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          393837...
+```
+✅ Encrypted and secure
+
+## Basic Commands
+
+1️. Create encrypted file
+
+```bash
+ansible-vault create secrets.yml
+```
+2️. View file
+```bash
+ansible-vault view secrets.yml
+```
+3️. Edit file
+```bash
+ansible-vault edit secrets.yml
+```
+Add name: preethy
+Password: preethy123
+
+4️. Encrypt existing file
+```bash
+ansible-vault encrypt file.yml
+```
+5️. Decrypt file
+```bash
+ansible-vault decrypt file.yml
+```
+
+## Use Vault in Playbook
+
+```yaml
+ansible-playbook playbook.yml --ask-vault-pass
+```
+
+👉 It will ask password to decrypt

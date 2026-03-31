@@ -25,6 +25,8 @@ ansible all -m setup -a "filter=ansible_os_family"
 ```
 ## when with loops (very important interview question)
 
+"When used with loops in Ansible, the when condition is evaluated for each item individually, so tasks can run or skip per item instead of the whole loop.”
+
 ```yaml
 - name: Install only specific packages
   apt:

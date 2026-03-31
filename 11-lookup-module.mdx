@@ -1,0 +1,85 @@
+Lookup plugins read data from external sources (files, env vars, APIs, etc.) and bring it into your playbook.
+
+lookup = get external data into Ansible
+
+## Why use lookup?
+
+Normally, Ansible uses:
+- variables
+- facts
+
+But sometimes you need data from:
+
+- a file
+- environment variable
+- another system
+
+👉 That’s where lookup comes in.
+
+## Example 1: Read File Content
+
+```yaml
+- name: lookup playbook
+  hosts: all
+  vars:
+    creds: "{{lookup('file','/root/creds.txt')}}"
+
+  tasks:
+    - debug:
+        msg: The Credentials are {{creds}}
+```
+
+or 
+
+```yaml
+- name: Read file
+  debug:
+    msg: "{{ lookup('file', '/tmp/myfile.txt') }}"
+```
+
+## Example 2: Read Environment Variable
+
+```yaml
+- name: Get env variable
+  debug:
+    msg: "{{ lookup('env', 'HOME') }}"
+``` 
+## Example 3: Read Password from File
+
+```yaml
+- name: Read secret
+  debug:
+    msg: "{{ lookup('file', '/etc/password.txt') }}"
+```
+## Example 4: Using with Variables
+
+```yaml
+- name: Use lookup in variable
+  vars:
+    mydata: "{{ lookup('file', 'data.txt') }}"
+  debug:
+    msg: "{{ mydata }}"
+```
+
+### Lookup runs on control node (your machine), NOT on remote servers.
+
+- Control Node → lookup runs here
+- Managed Node → tasks run here
+
+🔹 Common Lookup Plugins
+
+|Plugin|	Purpose|
+|---|---|
+|file|	Read file|
+|env|	Read environment variable|
+|pipe|	Run shell command|
+|url|	Fetch from URL|
+|password|	Generate/store passwords|
+
+## Lookup vs Vars (Interview Trap)
+
+| Feature   | Lookup       | Variable            |
+| --------- | ------------ | ------------------- |
+| Source    | External     | Defined in playbook |
+| Execution | Runtime      | Static              |
+| Location  | Control node | Anywhere            |

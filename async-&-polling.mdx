@@ -1,0 +1,17 @@
+==> Asynchronous & Polling
+By default, ansible runs task synchronously, meaning it waits for each task to finish before moving the next task. However, for long-running tasks, you can use asynchronous execution with polling to avoid timeouts
+
+For every task in ansible, we can set a time limit
+If the task is not performed in that time limit, ansible will stop playbook execution
+This is called as Asynchronous and Polling
+
+```yaml
+- name: asynchronous and polling
+  hosts: all
+  become: yes
+  tasks:
+    - name: long running task
+      shell: sleep 60
+      async: 120 # time limit for the task to complete
+      poll: 5 # time interval to check the status of the task
+```

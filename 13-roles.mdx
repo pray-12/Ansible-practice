@@ -1,0 +1,103 @@
+**Roles** are used to organize playbooks into a reusable, structured directory format.
+
+## Benefits:
+
+- reusable
+- clean project structure
+- easier maintenance
+
+##Why Roles are Needed
+
+When your playbook becomes big:
+
+- ❌ Hard to manage
+- ❌ Hard to reuse
+- ❌ Messy code
+
+👉 Roles solve this by organizing everything properly
+
+So far we have written different modules in a single file. In this case, if i want to call a specific module it becomes difficult. So what we can do is, we will write separate playbooks for each module and then we can call whichever playbook we need. This we can do it using Ansible Roles
+
+- Ansible roles helps to organize and structure the playbooks by breaking them into reusable components.
+- They simplify automation by grouping related tasks, handlers, variables and templates in a standardized directory structure.
+
+Ansible roles are used to divide the playbook into directory structure
+
+Example:
+ 
+3 roles (packages, users, webservers)
+
+- Packages role will contain all the tasks related to package installation
+- Users role will contain all the tasks related to user management
+- Webservers role will contain all the tasks related to web server configuration
+
+![](/images/roles.png) 
+Create folder structure for roles:
+
+```bash
+mkdir -p roles/packages/tasks
+mkdir -p roles/users/tasks
+mkdir -p roles/webservers/tasks
+```
+
+Run command `tree` to see the directory structure of the roles
+
+```bash
+tree
+```
+
+Create tasks for each role:
+
+```yaml
+# /roles/packages/tasks/main.yml
+
+- name: installation of packages
+  yum: 
+    name: "{{item}}"
+    state: present
+  loop:
+    - git
+    - maven
+    - docker
+```
+```yaml
+# /roles/users/tasks/main.yml
+- name: creation of users
+  user: 
+    name: "{{item}}"
+    state: present
+  with_items::
+    - ajay
+    - ajit
+    - anand
+```
+```yaml
+# /roles/webservers/tasks/main.yml
+
+- name: installation of webserver
+  yum:
+    name: httpd
+    state: present
+
+- name: starting httpd
+  service:
+    name: httpd
+    state: started
+```
+```yaml
+# master playbook master.yml
+
+- name: master playbook
+  hosts: all
+  become: yes
+  roles:
+    - packages
+    - users
+    - webservers
+```
+
+Just run the master playbook and it will execute all the tasks in the roles
+
+```bash
+ansible-playbook master.yml
+```

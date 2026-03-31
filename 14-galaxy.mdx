@@ -1,0 +1,76 @@
+In Ansible, [Galaxy](https://galaxy.ansible.com/ui/) (called Ansible Galaxy) is a repository (like a marketplace) for sharing and downloading roles and collections.
+
+## Why Galaxy is Used
+
+Instead of writing everything from scratch:
+
+- ❌ Write your own nginx setup
+- ❌ Write your own docker setup
+
+👉 You can directly download ready-made roles from Galaxy
+
+## Example
+
+Want to install NGINX?
+
+```bash
+ansible-galaxy install geerlingguy.nginx
+```
+
+👉 Now you can use it in your playbook:
+
+```yaml
+- hosts: all
+  roles:
+    - geerlingguy.nginx
+```
+
+## Real DevOps Use Cases
+- Install nginx role quickly
+- Setup docker environment
+- Deploy applications faster
+- Standardize configurations
+## ⚠️ Important Points
+- Saves time ⏱️
+- Promotes reuse 🔁
+- Community-driven 🌍
+- Always review roles before using (security)
+
+## Common Commands
+1️. Install a role
+```bash
+ansible-galaxy install username.rolename
+```
+2️. Create a new role
+```bash
+ansible-galaxy init myrole
+```
+
+👉 This creates full role structure automatically
+
+3️. List installed roles
+
+```bash
+ansible-galaxy list
+```
+
+4️. Remove a role
+```bash
+ansible-galaxy remove username.rolename
+```
+
+###  Collections (New Concept)
+
+Modern Ansible uses collections:
+
+```bash
+ansible-galaxy collection install community.docker
+```
+
+👉 Collections include:
+
+- roles
+- modules
+- plugins
+
+Note: Not recommended to use galaxy for large automation projects. It’s great for quick tasks but for complex setups, writing your own playbooks and roles is better.

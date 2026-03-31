@@ -1,0 +1,36 @@
+strategies define how tasks are executed across multiple hosts.
+
+## Why Strategies Matter
+
+When you run a playbook on multiple servers:
+
+- Should all servers run task 1 first, then task 2?
+- Or should each server run everything independently?
+
+👉 This behavior is controlled by strategy.
+
+## Types of Strategies
+1. **Linear (default)**:
+- Task runs on all hosts at the same time
+- Then moves to next task
+2. **Free**: 
+- Each host runs tasks independently
+- Faster hosts move ahead without waiting
+
+| Feature   | linear       | free        |
+| --------- | ------------ | ----------- |
+| Execution | Step-by-step | Independent |
+| Speed     | Slower       | Faster      |
+| Sync      | Yes          | No          |
+| Default   | ✅ Yes        | ❌ No        |
+
+```bash
+- name: strategies
+  hosts: all
+  strategy: Free  #this strategy can be changed based on the requirement
+  tasks:
+    - name: installation of git
+      yum:
+        name: git
+        state: present
+```
