@@ -1,0 +1,123 @@
+## Handlers & Notifications
+
+Handlers run only when a task changes something.
+
+1. notify → tells Ansible “hey, something changed!”. It is used to notify the handler to run when a task changes something.
+2. handler → runs only when notified. It is used to perform a specific action when notified by a task.
+
+```yaml
+
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Update config
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/nginx.conf
+      notify: Restart Nginx
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+```
+- First, it targets all hosts and runs with sudo privileges.
+- Then it ensures Nginx is installed using the apt module.
+
+- Next, it copies the Nginx configuration file to the target server.
+- If the configuration file changes, it triggers a handler using notify.
+
+- The handler is responsible for restarting Nginx, but it runs only when a change occurs, and it runs at the end of the playbook execution.
+
+- This ensures that the service is restarted only when required, avoiding unnecessary restarts and maintaining efficiency.”
+
+
+Example:
+
+10 tasks in the playbook
+
+task 1: install apache
+task 2:
+task 3:
+task 4:
+task 5: start apache
+
+i want to call task 5 to get executed immediately after task 1
+
+If one task is dependent upon another task, then we will use HANDLERS
+
+```yaml
+- name: notify and handlers concept
+  hosts: all
+  become: yes
+  tasks:
+    - name: installation of apache
+      yum: name=httpd state=present
+      notify: starting apache
+  handlers:
+    - name: starting apache
+      service: name=httpd state=started
+      ignore_error: yes # if we get any error it will ignore, but not recommended.
+```
+
+Exampele: 1
+
+```yaml
+---
+- name: Install packages and verify using notify/handlers
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Git
+      package:
+        name: git
+        state: present
+      notify: Check Git Version
+
+    - name: Install Maven
+      package:
+        name: maven
+        state: present
+      notify: Check Maven Version
+
+    - name: Install Tree
+      package:
+        name: tree
+        state: present
+
+  handlers:
+
+    # Task 4: Check Git Version
+    - name: Check Git Version
+      command: git --version
+      register: git_version_output
+      listen: Check Git Version
+      changed_when: false
+      notify: Print Git Version
+
+    # Displays Git version to terminal
+    - name: Print Git Version
+      debug:
+        msg: "{{ git_version_output.stdout }}"
+
+    # Task 5: Check Maven Version
+    - name: Check Maven Version
+      command: mvn -version
+      register: maven_version_output
+      listen: Check Maven Version
+      changed_when: false
+      notify: Print Maven Version
+
+    # Displays Maven version to terminal
+    - name: Print Maven Version
+      debug:
+        msg: "{{ maven_version_output.stdout }}"
+```

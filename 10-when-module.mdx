@@ -1,0 +1,43 @@
+## WHEN Module
+
+when is used to control task execution based on conditions.
+
+### Types of servers:
+
+1. Homogeneous servers: all servers are same in terms of configuration and software.
+2. Heterogeneous servers: all servers are different in terms of configuration and software.
+
+See OS family of the servers:
+```bash
+ansible all -m setup -a "filter=ansible_os_family"
+```
+
+```yaml
+- hosts: all
+  tasks:
+    - name: install git
+      yum: name=git state=present
+      when: ansible_os_family == "RedHat"
+
+    - name: install git
+      apt: name=git state=present
+      when: ansible_os_family == "Debian"
+```
+## when with loops (very important interview question)
+
+```yaml
+- name: Install only specific packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - nginx
+    - apache2
+    - mysql
+  when: item == "nginx"
+```
+```bash
+nginx → changed
+apache2 → skipped
+mysql → skipped
+```

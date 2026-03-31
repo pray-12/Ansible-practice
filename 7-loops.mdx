@@ -20,4 +20,26 @@
         - httpd
 ```
 
-item is a reserved keyword in Ansible that represents the current item in the loop. The with_items directive is used to specify the list of items that we want to loop through. In this example, we are installing 4 packages: git, maven, tree, and httpd. The yum module will be executed for each item in the list, installing each package on the target hosts.
+`item` is a reserved keyword in Ansible that represents the current item in the loop. 
+
+The `with_items` directive is used to specify the list of items that we want to loop through. 
+
+In this example, we are installing 4 packages: git, maven, tree, and httpd. The yum module will be executed for each item in the list, installing each package on the target hosts.
+
+Example to create multiple users using loops:
+
+```yaml
+# multiple_users.yaml
+
+- name: create multiple users using loops
+  hosts: all
+  become: yes
+  tasks:
+   - name: list of names
+     user: name={{item}} state=present
+     loop:
+      - preethy
+      - poorva
+      - pramod
+      - priyanka
+```

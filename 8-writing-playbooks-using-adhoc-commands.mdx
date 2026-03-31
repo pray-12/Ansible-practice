@@ -1,0 +1,22 @@
+## Writing a playbook using ad-hoc commands
+
+We have 3 approaches to write playbooks using ad-hoc commands:
+
+1. SHELL - Most advanced and powerful module. It allows you to run any command on the target hosts. It is used when you want to run a command that is not supported by other modules.
+2. COMMAND - This module is used to run commands on the target hosts. It is simpler than the SHELL module and is used when you want to run a command that is supported by the COMMAND module.
+3. RAW - This module is used to run raw commands on the target hosts. It is similar to the SHELL module but does not use a shell environment.
+
+These are different modules which works in the same way
+
+```yaml
+- hosts: all
+  tasks:
+    - name: installation of git
+      shell: yum install git -y
+
+    - name: installation of maven
+      command: yum install maven -y
+
+    - name: installation of docker
+      raw: yum install docker -y
+```
