@@ -1,4 +1,4 @@
-## WHEN Module
+## WHEN Module [if/else in Ansible]
 
 when is used to control task execution based on conditions.
 
@@ -8,6 +8,7 @@ when is used to control task execution based on conditions.
 2. Heterogeneous servers: all servers are different in terms of configuration and software.
 
 See OS family of the servers:
+
 ```bash
 ansible all -m setup -a "filter=ansible_os_family"
 ```

@@ -28,11 +28,12 @@ Handlers run only when a task changes something.
         name: nginx
         state: restarted
 ```
+
 - First, it targets all hosts and runs with sudo privileges.
 - Then it ensures Nginx is installed using the apt module.
 
 - Next, it copies the Nginx configuration file to the target server.
-- If the configuration file changes, it triggers a handler using notify.
+- If the configuration file  `/etc/nginx/nginx.conf` changes, it triggers a handler using notify.
 
 - The handler is responsible for restarting Nginx, but it runs only when a change occurs, and it runs at the end of the playbook execution.
 
@@ -65,59 +66,4 @@ If one task is dependent upon another task, then we will use HANDLERS
     - name: starting apache
       service: name=httpd state=started
       ignore_error: yes # if we get any error it will ignore, but not recommended.
-```
-
-Exampele: 1
-
-```yaml
----
-- name: Install packages and verify using notify/handlers
-  hosts: all
-  become: yes
-
-  tasks:
-    - name: Install Git
-      package:
-        name: git
-        state: present
-      notify: Check Git Version
-
-    - name: Install Maven
-      package:
-        name: maven
-        state: present
-      notify: Check Maven Version
-
-    - name: Install Tree
-      package:
-        name: tree
-        state: present
-
-  handlers:
-
-    # Task 4: Check Git Version
-    - name: Check Git Version
-      command: git --version
-      register: git_version_output
-      listen: Check Git Version
-      changed_when: false
-      notify: Print Git Version
-
-    # Displays Git version to terminal
-    - name: Print Git Version
-      debug:
-        msg: "{{ git_version_output.stdout }}"
-
-    # Task 5: Check Maven Version
-    - name: Check Maven Version
-      command: mvn -version
-      register: maven_version_output
-      listen: Check Maven Version
-      changed_when: false
-      notify: Print Maven Version
-
-    # Displays Maven version to terminal
-    - name: Print Maven Version
-      debug:
-        msg: "{{ maven_version_output.stdout }}"
 ```
