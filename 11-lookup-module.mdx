@@ -6,7 +6,7 @@ lookup = get external data into Ansible
 
 Normally, Ansible uses:
 - variables
-- facts
+- facts - facts are pieces of information about the system that Ansible gathers automatically when it runs a playbook. They include details like the operating system, IP address, CPU architecture, and more. You can use these facts to make decisions in your playbook.
 
 But sometimes you need data from:
 
@@ -81,5 +81,5 @@ or
 | Feature   | Lookup       | Variable            |
 | --------- | ------------ | ------------------- |
 | Source    | External     | Defined in playbook |
-| Execution | Runtime      | Static              |
+| Execution | Runtime [Runtime is the time when the program is running]     | Static[Static is the time when the program is compiled or initialized]              |
 | Location  | Control node | Anywhere            |

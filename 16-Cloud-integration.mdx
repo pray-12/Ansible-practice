@@ -18,11 +18,13 @@ Instead of manually creating resources in cloud consoles, you can use Ansible to
   tasks:
     - name: Launch instance
       ec2:
-        key_name: mykey
-        instance_type: t2.micro
-        image: ami-123456
-        region: ap-south-1
-        count: 1
+        key_name: mykey # SSH key for access
+        instance_type: t2.micro # Type of VM
+        image: ami-123456 # AMI ID for OS
+        region: ap-south-1 # AWS region
+        wait: yes # Wait until instance is running
+        count: 1 # Number of instances
+      register: ec2 # Store result in variable for later use
 ```
 This creates a virtual machine in AWS.
 
@@ -33,6 +35,7 @@ Ansible → Cloud API → Cloud Provider → Resource Created
 ```
 
 ## Real DevOps Use Cases
+
 - Provision EC2 instances
 - Create VPC, subnets, security groups
 - Deploy apps on cloud
@@ -40,7 +43,9 @@ Ansible → Cloud API → Cloud Provider → Resource Created
 - Configure servers after creation
 
 ## Advantages
+
 - Infrastructure as Code (IaC)
+
 - Automation & consistency
 - Faster deployments
 - No manual errors

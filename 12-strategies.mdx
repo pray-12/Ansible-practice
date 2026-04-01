@@ -1,4 +1,4 @@
-strategies define how tasks are executed across multiple hosts.
+**strategies** define how tasks are executed across multiple hosts.
 
 ## Why Strategies Matter
 
@@ -10,10 +10,14 @@ When you run a playbook on multiple servers:
 👉 This behavior is controlled by strategy.
 
 ## Types of Strategies
+
 1. **Linear (default)**:
+
 - Task runs on all hosts at the same time
 - Then moves to next task
+
 2. **Free**: 
+
 - Each host runs tasks independently
 - Faster hosts move ahead without waiting
 

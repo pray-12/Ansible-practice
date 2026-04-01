@@ -1,0 +1,36 @@
+## Dynamic Inventory (☁️ MUST for Cloud)
+👉 What it is:
+
+Instead of static IPs → fetch servers automatically from cloud (AWS, Azure, GCP)
+
+### 🧠 Static inventory (old way):
+
+```bash
+[web]
+192.168.1.10
+192.168.1.11
+```
+
+### 🧠 Dynamic (AWS example):
+
+Install:
+
+```bash
+pip install boto boto3
+Inventory config:
+plugin: aws_ec2
+regions:
+  - ap-south-1
+filters:
+  tag:Name: web-server
+```
+
+▶️ Run:
+```bash
+ansible-inventory -i aws_ec2.yml --list
+```
+
+## 🚀 Real Use:
+- Auto-detect EC2 instances
+- Works with autoscaling
+- No need to update inventory manually

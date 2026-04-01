@@ -1,0 +1,36 @@
+## Idempotency
+
+👉 What it is:
+
+Running Ansible multiple times → same result, no extra changes
+
+### ❌ Bad Example:
+
+```bash
+- name: Run command
+  command: apt install nginx -y
+```
+
+👉 Runs every time ❌
+
+✅ Good Example:
+
+```yaml
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+```
+
+👉 Runs only if not installed ✔️
+
+🧠 Output:
+
+```bash
+first run → changed
+second run → ok (no change)
+```
+### 🚀 Real Use:
+- Safe deployments
+- Avoid breaking systems
+- Consistent infrastructure

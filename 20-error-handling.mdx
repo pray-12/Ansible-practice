@@ -1,0 +1,40 @@
+## Error Handling (💥 VERY IMPORTANT)
+👉 What it is:
+
+Handle failures gracefully instead of breaking everything.
+
+### 🧠 Example using block/rescue:
+
+```yaml
+- name: Install nginx with error handling
+tasks:
+  - block:
+      - name: Install nginx
+        apt:
+          name: nginx
+          state: present
+
+      - name: Start nginx
+        service:
+          name: nginx
+          state: started
+
+    rescue:
+      - name: Print error message
+        debug:
+          msg: "Something failed!"
+
+    always:
+      - name: Always run this
+        debug:
+          msg: "Cleanup or log"
+```
+
+## 💡 Behavior:
+- If block fails → rescue runs
+- always → runs no matter what
+
+## 🚀 Real Use:
+- Rollback deployments
+- Logging failures
+- Cleanup tasks

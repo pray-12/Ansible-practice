@@ -1,0 +1,58 @@
+### Ansible Tags
+
+Tags are used to run specific tasks in a playbook. It allows you to run only a subset of tasks in a playbook based on the tags assigned to those tasks. This can be useful when you want to run only certain tasks without executing the entire playbook.
+
+- TAGS are used to execute or skip specific tasks
+
+```yaml tags_playbook.yml
+- name: tags playbook
+  hosts: all
+  become: yes
+  tasks:
+    - name: installation of git
+      yum: 
+        name: git
+        state: present
+      tags: git
+    
+    - name: installation of docker
+      yum:
+        name: docker
+        state: present
+      tags: docker
+
+    - name: starting docker
+      service:
+        name: docker
+        state: started
+      tags: startdocker
+
+    - name: creation of user
+      user:
+        name: kastro
+        state: present
+      tags: kastro-user
+```
+
+To run only the tasks with the tag "git" and "startdocker":
+
+```bash
+ansible-playbook tags-playbook.yml --tags git,startdocker
+```
+
+Skip the tasks with the tag "docker":
+
+```bash
+ansible-playbook tags-playbook.yml --skip-tags docker
+```
+
+To check the list of users on the worker nodes:
+
+```bash
+ansible all -a "cat /etc/passwd"
+```
+
+## Real Use:
+- Run only deployment step
+- Skip DB changes
+- Faster debugging
