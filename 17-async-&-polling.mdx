@@ -12,7 +12,11 @@ By default, ansible runs task synchronously, meaning it waits for each task to f
   become: yes
   tasks:
     - name: long running task
-      shell: sleep 60
+      shell: sleep 60 # The server waits 60 seconds doing nothing. Then task completes
       async: 120 # time limit for the task to complete
       poll: 5 # time interval to check the status of the task
 ```
+
+- ✔ Task runs in background
+- ✔ Ansible keeps polling every 5 sec
+- ✔ Stops when task finishes (after 60 sec)
