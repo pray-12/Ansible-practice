@@ -4,6 +4,15 @@
 
 Running the same playbook multiple times gives the same result without making unnecessary changes.
 
+### Real-Life Meaning
+
+Imagine:
+
+You install nginx once ✅
+Run playbook again → it should NOT reinstall ❌
+
+👉 That is idempotency
+
 ### ❌ Bad Example:
 
 ```bash
