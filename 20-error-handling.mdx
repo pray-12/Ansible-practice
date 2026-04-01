@@ -1,7 +1,17 @@
 ## Error Handling (💥 VERY IMPORTANT)
 👉 What it is:
 
-Handle failures gracefully instead of breaking everything.
+Managing failures in a playbook so that it doesn’t completely break and can recover or handle issues gracefully.
+
+### Why we need it?
+
+By default:
+- ❌ If one task fails → entire playbook stops
+
+👉 In real-world:
+
+- You don’t want full failure
+- You want fallback / logging / cleanup
 
 ### 🧠 Example using block/rescue:
 
@@ -30,11 +40,85 @@ tasks:
           msg: "Cleanup or log"
 ```
 
+### CASE 1: Everything works fine
+
+```bash
+block → success
+rescue → skipped
+always → runs
+```
+### CASE 2: nginx installation fails
+
+```bash
+block → fails
+rescue → runs (prints error)
+always → runs (cleanup/log)
+```
+### CASE 3: nginx installation works but service fails to start
+
+```bash
+block → fails at service start
+rescue → runs (prints error)
+always → runs (cleanup/log)
+```
+
+### CASE 4: Error inside rescue
+```bash
+block → fails
+rescue → fails (error in rescue)
+always → runs (cleanup/log)
+```
+
+### CASE 5: Error inside always
+```bash
+block → fails
+rescue → runs (prints error)
+always → fails (error in always)
+```
+
+### “What happens if a task in block fails?”
+
+“If any task inside a block fails, the remaining tasks in the block are skipped, and control moves to the rescue section. After that, the always section executes regardless of success or failure.”
+
+### What if you want block to NOT fail?
+```yaml
+ignore_errors: yes
+```
+
+### “What if you want custom failure?”
+
+```yaml
+failed_when: condition
+```
+
+### What if you want to retry on failure?
+
+```yaml
+retries: 3
+delay: 5
+```
+### “What if you want to skip on failure?”
+
+```yaml
+until: condition
+```
+
+### What if you want to rollback on failure?
+
+```yaml
+rescue:
+  - name: Rollback nginx
+    apt:
+      name: nginx #uninstall nginx if installation failed
+      state: absent #uninstall nginx if installation failed
+```
+
 ## 💡 Behavior:
 - If block fails → rescue runs
 - always → runs no matter what
 
 ## 🚀 Real Use:
+
 - Rollback deployments
 - Logging failures
 - Cleanup tasks
