@@ -2,7 +2,7 @@
 
 👉 What it is:
 
-Running Ansible multiple times → same result, no extra changes
+Running the same playbook multiple times gives the same result without making unnecessary changes.
 
 ### ❌ Bad Example:
 
@@ -11,7 +11,10 @@ Running Ansible multiple times → same result, no extra changes
   command: apt install nginx -y
 ```
 
-👉 Runs every time ❌
+### Problem:
+- Runs every time
+- Not aware of current state
+- Can break things
 
 ✅ Good Example:
 
