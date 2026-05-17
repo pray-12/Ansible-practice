@@ -39,6 +39,25 @@ Handlers run only when a task changes something.
 
 - This ensures that the service is restarted only when required, avoiding unnecessary restarts and maintaining efficiency.”
 
+### Why Do We Need Handlers?
+
+Without handlers, a task like restarting a service would run every time the playbook runs — even if nothing changed.
+
+Handlers solve this by running only when required.
+
+Real-World Example
+
+Suppose you update an Nginx config file.
+
+After changing the config, you need to restart Nginx.
+
+But restarting every time is unnecessary and can cause downtime.
+
+So:
+
+- Copy config file
+- If file changed → notify handler
+- Handler restarts Nginx only once
 
 Example:
 
