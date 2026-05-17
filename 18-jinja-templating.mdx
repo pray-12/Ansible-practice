@@ -258,3 +258,135 @@ server {
 > In Ansible, Jinja2 templates are used to create dynamic configuration files.  
 > Variables are stored separately for different environments like dev, test, and prod.  
 > During playbook execution, Ansible replaces template variables with actual environment values and generates the final configuration automatically.
+# Without Jinja2 Templates in Ansible
+
+## Project Structure
+
+```text
+project/
+├── inventory
+├── playbook.yml
+├── files/
+│   ├── nginx-dev.conf
+│   ├── nginx-test.conf
+│   └── nginx-prod.conf
+```
+
+---
+
+# 1. Dev Config File
+
+## File: `files/nginx-dev.conf`
+
+```nginx
+server {
+    listen 80;
+
+    server_name dev.example.com;
+
+    location / {
+        proxy_pass http://10.0.0.5:8080;
+    }
+}
+```
+
+---
+
+# 2. Test Config File
+
+## File: `files/nginx-test.conf`
+
+```nginx
+server {
+    listen 80;
+
+    server_name test.example.com;
+
+    location / {
+        proxy_pass http://10.0.1.5:8080;
+    }
+}
+```
+
+---
+
+# 3. Prod Config File
+
+## File: `files/nginx-prod.conf`
+
+```nginx
+server {
+    listen 80;
+
+    server_name prod.example.com;
+
+    location / {
+        proxy_pass http://10.0.2.5:8080;
+    }
+}
+```
+
+---
+
+# 4. Inventory File
+
+## File: `inventory`
+
+```ini
+[dev]
+dev-server ansible_host=192.168.1.10
+
+[test]
+test-server ansible_host=192.168.1.20
+
+[prod]
+prod-server ansible_host=192.168.1.30
+```
+
+---
+
+# 5. Playbook Without Jinja2
+
+## File: `playbook.yml`
+
+```yaml
+- hosts: dev
+  become: yes
+
+  tasks:
+    - name: Copy dev nginx config
+      copy:
+        src: files/nginx-dev.conf
+        dest: /etc/nginx/nginx.conf
+
+- hosts: test
+  become: yes
+
+  tasks:
+    - name: Copy test nginx config
+      copy:
+        src: files/nginx-test.conf
+        dest: /etc/nginx/nginx.conf
+
+- hosts: prod
+  become: yes
+
+  tasks:
+    - name: Copy prod nginx config
+      copy:
+        src: files/nginx-prod.conf
+        dest: /etc/nginx/nginx.conf
+```
+
+---
+
+# Problems Without Jinja2
+
+| Problem | Explanation |
+|---|---|
+| Duplicate files | Same config repeated multiple times |
+| Hard maintenance | Need to edit every file manually |
+| Error-prone | Easy to forget updating one environment |
+| Poor scalability | Difficult with many environments |
+| More code | Larger playbooks and configs |
+
