@@ -67,3 +67,7 @@ ansible-inventory -i aws_ec2.yml --list
 - Auto-detect EC2 instances
 - Works with autoscaling
 - No need to update inventory manually
+
+**Static inventory** is still used in Ansible projects for small or stable environments where server IPs rarely change.
+However, in modern cloud environments, dynamic inventory is preferred because cloud instances are **frequently created, destroyed, or assigned new IP addresses**.
+Dynamic inventory automatically fetches infrastructure information from cloud providers like AWS or Azure.
