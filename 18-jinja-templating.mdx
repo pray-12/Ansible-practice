@@ -59,3 +59,202 @@ server {
 - Config files (nginx, apache)
 - Kubernetes YAML generation
 - Environment-based configs
+
+# Ansible Jinja2 Template Example for Multiple Environments
+
+## Project Structure
+
+```text
+project/
+├── inventory
+├── playbook.yml
+├── templates/
+│   └── nginx.conf.j2
+├── group_vars/
+│   ├── dev.yml
+│   ├── test.yml
+│   └── prod.yml
+```
+
+---
+
+# 1. Jinja2 Template
+
+## File: `templates/nginx.conf.j2`
+
+```nginx
+server {
+    listen 80;
+
+    server_name {{ domain_name }};
+
+    location / {
+        proxy_pass http://{{ backend_ip }}:{{ backend_port }};
+    }
+}
+```
+
+---
+
+# 2. Inventory File
+
+## File: `inventory`
+
+```ini
+[dev]
+dev-server ansible_host=192.168.1.10
+
+[test]
+test-server ansible_host=192.168.1.20
+
+[prod]
+prod-server ansible_host=192.168.1.30
+```
+
+---
+
+# 3. Dev Variables
+
+## File: `group_vars/dev.yml`
+
+```yaml
+domain_name: dev.example.com
+backend_ip: 10.0.0.5
+backend_port: 8080
+```
+
+---
+
+# 4. Test Variables
+
+## File: `group_vars/test.yml`
+
+```yaml
+domain_name: test.example.com
+backend_ip: 10.0.1.5
+backend_port: 8080
+```
+
+---
+
+# 5. Prod Variables
+
+## File: `group_vars/prod.yml`
+
+```yaml
+domain_name: prod.example.com
+backend_ip: 10.0.2.5
+backend_port: 8080
+```
+
+---
+
+# 6. Playbook
+
+## File: `playbook.yml`
+
+```yaml
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Deploy nginx config
+      template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+
+      notify:
+        - Restart nginx
+
+  handlers:
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
+```
+
+---
+
+# How It Works
+
+When you run:
+
+```bash
+ansible-playbook -i inventory playbook.yml
+```
+
+Ansible:
+
+1. Detects the host group (`dev`, `test`, `prod`)
+2. Loads variables from matching `group_vars`
+3. Replaces Jinja2 variables in template
+4. Generates final config file
+5. Copies config to target server
+6. Restarts nginx if file changed
+
+---
+
+# Generated Config for Dev
+
+```nginx
+server {
+    listen 80;
+
+    server_name dev.example.com;
+
+    location / {
+        proxy_pass http://10.0.0.5:8080;
+    }
+}
+```
+
+---
+
+# Generated Config for Test
+
+```nginx
+server {
+    listen 80;
+
+    server_name test.example.com;
+
+    location / {
+        proxy_pass http://10.0.1.5:8080;
+    }
+}
+```
+
+---
+
+# Generated Config for Prod
+
+```nginx
+server {
+    listen 80;
+
+    server_name prod.example.com;
+
+    location / {
+        proxy_pass http://10.0.2.5:8080;
+    }
+}
+```
+
+---
+
+# Real DevOps Benefits
+
+- Reusable templates
+- Environment-specific configurations
+- Avoid manual changes
+- Easier maintenance
+- Better scalability
+- Infrastructure consistency
+
+---
+
+# Interview Answer
+
+> In Ansible, Jinja2 templates are used to create dynamic configuration files.  
+> Variables are stored separately for different environments like dev, test, and prod.  
+> During playbook execution, Ansible replaces template variables with actual environment values and generates the final configuration automatically.
