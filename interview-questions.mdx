@@ -285,13 +285,330 @@ Not idempotent and less secure.
 
 Explain a real issue + how you debugged + fixed it.
 
+# 20 Ansible Scenario-Based Interview Questions and Answers
 
-# 🚀 FINAL TIP
+---
 
-If you can confidently explain:
+# 1. A service should restart only if the config file changes. How will you do it?
 
-* Concepts clearly
-* Give examples
-* Talk about real project
+## Answer
 
-👉 You will crack most Ansible interviews.
+Use handlers with notify.
+
+```yaml
+tasks:
+  - name: Copy nginx config
+    template:
+      src: nginx.conf.j2
+      dest: /etc/nginx/nginx.conf
+    notify:
+      - Restart nginx
+
+handlers:
+  - name: Restart nginx
+    service:
+      name: nginx
+      state: restarted
+```
+
+---
+
+# 2. You need to install packages on multiple servers. How will you optimize the playbook?
+
+## Answer
+
+Use loops.
+
+```yaml
+- name: Install packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - git
+    - docker
+    - nginx
+```
+
+---
+
+# 3. Some tasks should run only on RedHat servers. How?
+
+## Answer
+
+Use conditions.
+
+```yaml
+- name: Install httpd
+  yum:
+    name: httpd
+    state: present
+  when: ansible_os_family == "RedHat"
+```
+
+---
+
+# 4. You need different configurations for dev and prod environments. How?
+
+## Answer
+
+Use group variables and Jinja2 templates.
+
+```text
+group_vars/dev.yml
+group_vars/prod.yml
+templates/nginx.conf.j2
+```
+
+---
+
+# 5. A task fails on one server but should continue on others. What will you do?
+
+## Answer
+
+Use:
+
+```yaml
+ignore_errors: yes
+```
+
+Example:
+
+```yaml
+- name: Restart service
+  service:
+    name: nginx
+    state: restarted
+  ignore_errors: yes
+```
+
+---
+
+# 6. You want to store database passwords securely. How?
+
+## Answer
+
+Use Ansible Vault.
+
+```bash
+ansible-vault encrypt secrets.yml
+```
+
+Run:
+
+```bash
+ansible-playbook site.yml --ask-vault-pass
+```
+
+---
+
+# 7. EC2 instance IPs change frequently. Static inventory fails. Solution?
+
+## Answer
+
+Use dynamic inventory.
+
+Example:
+
+```yaml
+plugin: amazon.aws.aws_ec2
+regions:
+  - ap-south-1
+```
+
+---
+
+# 8. How will you deploy the same application across multiple environments?
+
+## Answer
+
+Use:
+- roles
+- templates
+- group_vars
+
+One reusable playbook for:
+- dev
+- test
+- prod
+
+---
+
+# 9. How do you avoid duplicate tasks in playbooks?
+
+## Answer
+
+Use roles.
+
+```yaml
+roles:
+  - common
+  - nginx
+  - docker
+```
+
+---
+
+# 10. You need to execute a task only once even if multiple hosts exist.
+
+## Answer
+
+Use:
+
+```yaml
+run_once: true
+```
+
+Example:
+
+```yaml
+- name: Generate token
+  command: uuidgen
+  run_once: true
+```
+
+---
+
+# 11. How do you copy dynamic configuration files?
+
+## Answer
+
+Use template module.
+
+```yaml
+template:
+  src: app.conf.j2
+  dest: /etc/app.conf
+```
+
+---
+
+# 12. A task should run only if a file exists. How?
+
+## Answer
+
+Use stat module.
+
+```yaml
+- stat:
+    path: /tmp/test.txt
+  register: filecheck
+
+- debug:
+    msg: "File exists"
+  when: filecheck.stat.exists
+```
+
+---
+
+# 13. How do you reduce downtime during deployments?
+
+## Answer
+
+Use serial deployment.
+
+```yaml
+serial: 2
+```
+
+This updates servers in batches.
+
+---
+
+# 14. You need sudo/root access in playbooks. How?
+
+## Answer
+
+Use become.
+
+```yaml
+become: yes
+```
+
+---
+
+# 15. How do you manage different variables for different hosts?
+
+## Answer
+
+Use:
+- host_vars
+- group_vars
+
+Example:
+
+```text
+host_vars/web1.yml
+group_vars/prod.yml
+```
+
+---
+
+# 16. How do you trigger one task based on another task result?
+
+## Answer
+
+Use register.
+
+```yaml
+- command: systemctl status nginx
+  register: output
+
+- debug:
+    msg: "Nginx running"
+  when: output.rc == 0
+```
+
+---
+
+# 17. You need to deploy applications after creating infrastructure in AWS. Which tools will you use?
+
+## Answer
+
+- Terraform → infrastructure provisioning
+- Ansible → server configuration & deployment
+
+---
+
+# 18. How do you manage reusable automation for multiple projects?
+
+## Answer
+
+Use Ansible Galaxy or internal reusable roles.
+
+```bash
+ansible-galaxy init nginx
+```
+
+---
+
+# 19. How will you execute tasks asynchronously?
+
+## Answer
+
+Use async and poll.
+
+```yaml
+- name: Long running task
+  command: sleep 300
+  async: 400
+  poll: 0
+```
+
+---
+
+# 20. How do you test Ansible playbooks before production deployment?
+
+## Answer
+
+Use:
+- `--check` mode
+- staging environments
+- ansible-lint
+
+Example:
+
+```bash
+ansible-playbook site.yml --check
+```
+
