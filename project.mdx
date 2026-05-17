@@ -492,12 +492,17 @@ add password in the email_pass variable and the recipient email address in the a
         body: "{{ lookup('template', 'templates/report_email_animated.html.j2') }}"
         subtype: html
 ```
-### Step 9: Schedule the Playbook
+### Step 9: Schedule the Playbook 
+playbook.yaml
 
 ```yaml
 - import_playbook: collect_metrics.yaml
 - import_playbook: send_report.yaml
 ```
-To schedule the playbook to run daily at 3 PM, add the following cron job on the Ansible Master node:
 
+### Step 10: Run the playbook
 ```bash
+ansible-playbook playbook.yaml
+```
+
+
