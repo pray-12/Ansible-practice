@@ -505,4 +505,179 @@ playbook.yaml
 ansible-playbook playbook.yaml
 ```
 
+## 🔥 Ansible VM Monitoring Project – Interview Q&A
+
+---
+
+## 1. What is your project about?
+
+**Answer:**
+This project is an automated **VM monitoring and reporting system** built using Ansible. It collects system metrics like CPU, memory, and disk usage from multiple AWS EC2 instances and sends a consolidated health report via email using SMTP.
+
+---
+
+## 2. Why did you use Ansible in this project?
+
+**Answer:**
+Ansible is agentless and ideal for:
+- Remote server management
+- Automation of repetitive tasks
+- Easy integration with AWS EC2
+
+It helped automate metric collection across multiple VMs without installing any agents.
+
+---
+
+## 3. How are target servers identified dynamically?
+
+**Answer:**
+We used **AWS dynamic inventory plugin (`amazon.aws.aws_ec2`)**.
+
+It automatically fetches EC2 instances based on:
+- Tags (Environment=dev)
+- Region (ap-south-1)
+
+So no manual inventory management is needed.
+
+---
+
+## 4. What metrics are collected from servers?
+
+**Answer:**
+We collect:
+- CPU usage → using `mpstat`
+- Memory usage → using `free`
+- Disk usage → using `df`
+
+These are gathered using Ansible shell modules.
+
+---
+
+## 5. How is the report generated?
+
+**Answer:**
+We use:
+- **Jinja2 template engine**
+- Collected metrics stored in Ansible facts
+- Data is passed into an HTML template
+- Final output is a structured email report
+
+---
+
+## 6. How is email automation implemented?
+
+**Answer:**
+We use Ansible **mail module** with SMTP configuration:
+
+- SMTP server: smtp.gmail.com  
+- Port: 587  
+- Authentication: Gmail App Password  
+
+This sends automated HTML reports to stakeholders.
+
+---
+
+## 7. Why do we use port 587 instead of 25?
+
+**Answer:**
+Port 587 is:
+- Secure (supports TLS encryption)
+- Requires authentication
+- Recommended for application-based email sending  
+
+Port 25 is often blocked by cloud providers.
+
+---
+
+## 8. What is dynamic inventory in Ansible?
+
+**Answer:**
+Dynamic inventory automatically fetches hosts from external sources like:
+- AWS EC2
+- Azure
+- GCP  
+
+Instead of static IPs, it dynamically pulls running instances.
+
+---
+
+## 9. What is Jinja2 used for in your project?
+
+**Answer:**
+Jinja2 is used to:
+- Format collected metrics
+- Generate HTML email templates
+- Dynamically insert server data into reports
+
+---
+
+## 10. What challenges did you face in this project?
+
+**Answer:**
+- AWS credential configuration issues  
+- Subnet/VPC setup errors  
+- vCPU limit exceeded in AWS  
+- SMTP authentication issues (App Password requirement)  
+- Dynamic inventory not listing hosts initially  
+
+---
+
+## 11. How did you solve vCPU limit issue?
+
+**Answer:**
+By:
+- Reducing instance count  
+- Using smaller instance types  
+- Checking AWS quota in Service Quotas  
+
+---
+
+## 12. Can this system run in production?
+
+**Answer:**
+Yes, but enhancements are needed:
+- Prometheus for real-time monitoring  
+- Grafana dashboards  
+- AWS CloudWatch integration  
+- Alerting via Slack/Teams  
+
+---
+
+## 13. What is the advantage of this system?
+
+**Answer:**
+- Fully automated monitoring  
+- No manual server login required  
+- Centralized reporting  
+- Scalable across multiple VMs  
+- Easy to maintain using Ansible  
+
+---
+
+## 14. What is the role of AWS in this project?
+
+**Answer:**
+AWS provides:
+- EC2 instances (target servers)  
+- Networking (VPC, subnets)  
+- Security groups  
+- IAM roles for access  
+
+---
+
+## 15. How will you improve this project?
+
+**Answer:**
+I would enhance it by:
+- Adding Prometheus + Grafana dashboards  
+- Real-time alerting system  
+- Slack/Teams integration  
+- Storing metrics in time-series databases  
+- Containerizing the solution  
+
+---
+
+## 🚀 Bonus Interview Closing Statement
+
+“This project demonstrates my ability to automate infrastructure monitoring, integrate cloud services, and build production-like DevOps workflows using Ansible and AWS.”
 
